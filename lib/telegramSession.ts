@@ -22,6 +22,18 @@ export function getOrCreateSessionId(): string {
   return sessionId;
 }
 
+// Сохранить chatId в localStorage (для Vercel без KV)
+export function saveChatId(chatId: string): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("telegram_chat_id", chatId);
+}
+
+// Получить chatId из localStorage
+export function getChatId(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("telegram_chat_id");
+}
+
 // Получить deep link для подключения Telegram
 export function getTelegramConnectLink(sessionId: string): string {
   // Username бота - нужно будет указать в .env

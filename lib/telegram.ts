@@ -1,19 +1,20 @@
-import { getOrCreateSessionId } from "./telegramSession";
+import { getOrCreateSessionId, getChatId } from "./telegramSession";
 
 export async function sendTelegramNotification(
   result: "win" | "loss",
   promoCode?: string
 ): Promise<{ success: boolean; error?: string; code?: string }> {
   try {
-    // Получить sessionId из localStorage
+    // Получить sessionId и chatId из localStorage
     const sessionId = getOrCreateSessionId();
+    const chatId = getChatId();
 
     const response = await fetch("/api/notify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ result, promoCode, sessionId }),
+      body: JSON.stringify({ result, promoCode, sessionId, chatId }),
     });
 
     const data = await response.json();

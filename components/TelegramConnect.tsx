@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ExternalLink, Check, X as XIcon } from 'lucide-react'
-import { getOrCreateSessionId, checkTelegramConnection, tryConnectTelegram, getTelegramConnectLink } from '@/lib/telegramSession'
+import { getOrCreateSessionId, checkTelegramConnection, tryConnectTelegram, getTelegramConnectLink, saveChatId } from '@/lib/telegramSession'
 
 export default function TelegramConnect() {
   const [sessionId, setSessionId] = useState<string>('')
@@ -49,9 +49,24 @@ export default function TelegramConnect() {
       attempts++
 
       // Сначала пытаемся установить соединение (для локальной разработки)
-      const tryConnect = await tryConnectTelegram(sessionId)
+      const connectResult = await tryConnectTelegram(sessionId)
       
-      if (tryConnect) {
+      if (connectResult) {
+        // Сохраняем chatId в localStorage для Vercel
+        const response = await fetch("/api/telegram/connect", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.chatId) {
+            saveChatId(data.chatId);
+            console.log("[TelegramConnect] Saved chatId to localStorage:", data.chatId);
+          }
+        }
+        
         setIsConnected(true)
         setShowBanner(false)
         clearInterval(interval)

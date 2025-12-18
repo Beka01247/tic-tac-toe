@@ -55,12 +55,8 @@ export async function POST(request: NextRequest) {
           `[Connect] Found matching session! ${sessionId} -> ${chatId}`
         );
 
-        // Сохраняем привязку
+        // Сохраняем привязку в storage (для локальной разработки)
         await telegramStorage.setChatId(sessionId, chatId);
-
-        // Проверяем что сохранилось
-        const savedChatId = await telegramStorage.getChatId(sessionId);
-        console.log(`[Connect] Verification - stored chatId: ${savedChatId}`);
 
         // Отправляем подтверждение
         await sendTelegramMessage(
@@ -73,6 +69,7 @@ export async function POST(request: NextRequest) {
           `[Connect] Successfully connected: session ${sessionId} -> chat ${chatId}`
         );
 
+        // Возвращаем chatId клиенту для сохранения в localStorage
         return NextResponse.json({
           ok: true,
           connected: true,

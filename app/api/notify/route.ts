@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { result, promoCode, sessionId } = body;
+    const { result, promoCode, sessionId, chatId: clientChatId } = body;
 
     if (!result || !["win", "loss"].includes(result)) {
       return NextResponse.json(
@@ -31,15 +31,26 @@ export async function POST(request: NextRequest) {
     // Определяем chat_id
     let chatId: string | null = null;
 
-    console.log("[Notify] Received request:", { result, promoCode, sessionId });
+    console.log("[Notify] Received request:", {
+      result,
+      promoCode,
+      sessionId,
+      clientChatId,
+    });
 
-    // 1. Пытаемся получить chat_id из sessionId
-    if (sessionId) {
+    // 1. Используем chatId из клиента (localStorage) - для Vercel
+    if (clientChatId) {
+      chatId = clientChatId;
+      console.log("[Notify] Chat ID from client:", chatId);
+    }
+
+    // 2. Пытаемся получить chat_id из sessionId (для локальной разработки)
+    if (!chatId && sessionId) {
       chatId = await telegramStorage.getChatId(sessionId);
       console.log("[Notify] Chat ID from storage:", chatId);
     }
 
-    // 2. Fallback на env переменную (для владельца/demo)
+    // 3. Fallback на env переменную (для владельца/demo)
     if (!chatId && TELEGRAM_CHAT_ID) {
       chatId = TELEGRAM_CHAT_ID;
       console.log("[Notify] Using fallback TELEGRAM_CHAT_ID from env");
