@@ -1,0 +1,234 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-playfair: "Playfair Display", serif;
+    --font-inter: "Inter", sans-serif;
+  }
+
+  body {
+    @apply bg-ivory text-gray-800 font-sans;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    @apply font-serif text-h1;
+  }
+
+  h2 {
+    @apply font-serif text-h2;
+  }
+}
+
+/* Noise texture overlay */
+@layer utilities {
+  .noise-texture {
+    position: relative;
+  }
+
+  .noise-texture::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-soft border border-white/60 shadow-lg;
+  }
+
+  .btn-primary {
+    @apply bg-deep-rose text-white font-medium rounded-softer px-24 py-12 
+           transition-all duration-200 
+           hover:bg-deep-rose/90 hover:shadow-md
+           active:scale-[0.98] active:shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-white/60 backdrop-blur-soft text-gray-800 font-medium rounded-softer px-24 py-12 
+           border border-warm-gray/40
+           transition-all duration-200 
+           hover:bg-white/80 hover:shadow-md
+           active:scale-[0.98] active:shadow-sm;
+  }
+
+  /* ============================================
+     GAME BOARD STYLES - ПРЕМИУМ ДИЗАЙН
+     ============================================ */
+
+  /* VARIANT B: Tiles (Отдельные плитки) - РЕКОМЕНДУЕТСЯ */
+  .board-container-tiles {
+    @apply w-full max-w-[460px] mx-auto;
+  }
+
+  .board-grid-tiles {
+    @apply grid grid-cols-3 gap-16 p-8
+           bg-white/30 backdrop-blur-md rounded-softest
+           border-2 border-deep-rose/20 shadow-xl;
+  }
+
+  /* VARIANT A: Grid Lines (Линии-разделители) */
+  .board-container-grid {
+    @apply w-full max-w-[460px] mx-auto;
+  }
+
+  .board-grid-lines {
+    @apply grid grid-cols-3
+           bg-white/50 backdrop-blur-md rounded-softest
+           border-3 border-deep-rose/30 shadow-xl
+           p-12;
+  }
+
+  .board-cell-wrapper {
+    @apply p-8 min-h-[110px];
+  }
+
+  /* ============================================
+     CELL STYLES - КЛЕТКИ ИГРОВОГО ПОЛЯ
+     ============================================ */
+
+  .game-cell {
+    @apply w-full aspect-square
+           flex items-center justify-center
+           bg-white/95
+           border-3 border-deep-rose/25
+           rounded-soft
+           shadow-md
+           transition-all duration-200
+           relative overflow-hidden;
+    min-height: 88px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  /* Состояние: кликабельная клетка */
+  .game-cell.cell-clickable {
+    @apply cursor-pointer;
+  }
+
+  .game-cell.cell-clickable:hover {
+    @apply bg-blush/50 border-deep-rose/40 shadow-lg;
+  }
+
+  /* Состояние: заполненная клетка */
+  .game-cell.cell-filled {
+    @apply bg-white border-deep-rose/35 cursor-default;
+  }
+
+  /* Состояние: отключенная клетка */
+  .game-cell.cell-disabled {
+    @apply opacity-70 cursor-not-allowed;
+  }
+
+  /* Подсветка победной линии */
+  .game-cell.cell-winning {
+    @apply bg-soft-success/60 border-deep-rose/50 shadow-xl;
+    animation: winning-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes winning-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(201, 162, 166, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px 5px rgba(201, 162, 166, 0.2);
+    }
+  }
+
+  /* ============================================
+     CELL VALUE STYLES - X И O
+     ============================================ */
+
+  .cell-value {
+    @apply select-none;
+    font-weight: 900;
+    line-height: 1;
+    font-family: "Inter", sans-serif;
+  }
+
+  .cell-value-x {
+    @apply text-deep-rose;
+    font-size: 3.5rem;
+  }
+
+  .cell-value-o {
+    @apply text-purple-600;
+    font-size: 3.5rem;
+  }
+
+  /* Ghost Preview */
+  .cell-preview {
+    @apply text-deep-rose/25 select-none pointer-events-none;
+    font-weight: 900;
+    font-size: 3.5rem;
+    line-height: 1;
+  }
+
+  /* ============================================
+     OTHER UI ELEMENTS
+     ============================================ */
+
+  .status-bar {
+    @apply glass-card rounded-softer px-20 py-12 text-caption text-gray-700
+           flex items-center gap-8;
+  }
+}
+
+/* Custom animations */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Confetti animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  animation: confetti-fall 3s ease-out forwards;
+}
+
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap");
