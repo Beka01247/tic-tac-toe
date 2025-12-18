@@ -67,7 +67,9 @@ export async function checkTelegramConnection(
  * Попытаться установить подключение (для локальной разработки без webhook)
  * Использует getUpdates вместо webhook
  */
-export async function tryConnectTelegram(sessionId: string): Promise<boolean> {
+export async function tryConnectTelegram(
+  sessionId: string
+): Promise<{ connected: boolean; chatId?: string }> {
   try {
     const response = await fetch("/api/telegram/connect", {
       method: "POST",
@@ -76,13 +78,16 @@ export async function tryConnectTelegram(sessionId: string): Promise<boolean> {
     });
 
     if (!response.ok) {
-      return false;
+      return { connected: false };
     }
 
     const data = await response.json();
-    return data.connected === true;
+    return {
+      connected: data.connected === true,
+      chatId: data.chatId,
+    };
   } catch (error) {
     console.error("Failed to connect Telegram:", error);
-    return false;
+    return { connected: false };
   }
 }

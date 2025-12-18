@@ -48,23 +48,14 @@ export default function TelegramConnect() {
     const interval = setInterval(async () => {
       attempts++
 
-      // Сначала пытаемся установить соединение (для локальной разработки)
+      // Сначала пытаемся установить соединение (для локальной разработки и webhook)
       const connectResult = await tryConnectTelegram(sessionId)
       
-      if (connectResult) {
+      if (connectResult.connected) {
         // Сохраняем chatId в localStorage для Vercel
-        const response = await fetch("/api/telegram/connect", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId }),
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.chatId) {
-            saveChatId(data.chatId);
-            console.log("[TelegramConnect] Saved chatId to localStorage:", data.chatId);
-          }
+        if (connectResult.chatId) {
+          saveChatId(connectResult.chatId);
+          console.log("[TelegramConnect] Saved chatId to localStorage:", connectResult.chatId);
         }
         
         setIsConnected(true)
